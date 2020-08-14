@@ -4,8 +4,13 @@ export type RootStackParamList = {
 };
 
 export type BottomTabParamList = {
+  PokemonList: undefined;
   TabOne: undefined;
   TabTwo: undefined;
+};
+
+export type PokemonParamList = {
+  PokemonListScreen: undefined;
 };
 
 export type TabOneParamList = {
