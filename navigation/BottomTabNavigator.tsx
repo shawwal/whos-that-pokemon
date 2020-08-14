@@ -8,6 +8,7 @@ import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import PokemonListScreen from '../screens/PokemonListScreen';
+import PokemonDetailsScreen from '../screens/PokemonDetailsScreen';
 import { BottomTabParamList, TabOneParamList, TabTwoParamList, PokemonParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
@@ -19,7 +20,7 @@ export default function BottomTabNavigator() {
     <BottomTab.Navigator
       initialRouteName="TabOne"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
-      >
+    >
       <BottomTab.Screen
         name="PokéDex"
         component={PokemonListNavigator}
@@ -57,11 +58,18 @@ const PokemonListStack = createStackNavigator<PokemonParamList>();
 
 function PokemonListNavigator() {
   return (
-    <PokemonListStack.Navigator>
+    <PokemonListStack.Navigator
+      // mode="modal"
+    >
       <PokemonListStack.Screen
         name="PokemonListScreen"
         component={PokemonListScreen}
         options={{ headerTitle: 'Pokémon List' }}
+      />
+      <PokemonListStack.Screen
+        name="PokemonDetailsScreen"
+        component={PokemonDetailsScreen}
+        options={{ headerTitle: 'Pokémon Details', headerBackTitleVisible: false, }}
       />
     </PokemonListStack.Navigator>
   );

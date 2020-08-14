@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
 import { Text, View, FlatList } from '../components/Themed';
 import axios from 'axios';
+import { PokemonTabProps } from "./../types";
 
 const API_URL = 'https://pokeapi.co/api/v2/pokemon/';
-
 
 const Loading = () => (
   <View style={styles.loadingContainer}>
@@ -12,7 +12,7 @@ const Loading = () => (
   </View>
 );
 
-export default function PokemonListScreen() {
+export default function PokemonListScreen({ navigation }: PokemonTabProps<"PokemonListScreen">) {
   const [pokemonList, setPokemonList] = useState([]);
   const [nextApi, setNextApi] = useState('');
 
@@ -35,7 +35,15 @@ export default function PokemonListScreen() {
     getPokemon();
   }, []);
 
-  const handleGetPokemon = () => {
+  function handlePokemonDetails(link: any, id: any) {
+    // @ts-ignore
+    navigation.navigate('PokemonDetailsScreen', {
+      endPoint: link,
+      imgId: id,
+    });
+  }
+
+  function handleNextPokemon() {
     axios({
       url: nextApi,
       method: 'GET',
@@ -48,7 +56,7 @@ export default function PokemonListScreen() {
         } else {
           Alert.alert('No more Pokemon available at the moment');
         }
-      } 
+      }
     }).catch((error) => {
       Alert.alert('Something went wrong', error);
     })
@@ -62,18 +70,23 @@ export default function PokemonListScreen() {
           numColumns={3}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
-          onEndReached={handleGetPokemon}
+          onEndReached={handleNextPokemon}
           onEndReachedThreshold={0.23}
           removeClippedSubviews={true}
           renderItem={({ item, index }) => {
             const urlString = String(item.url);
             const pokemonId = urlString.slice(-7).replace(/\D|\//g, "");
+            const pokmeonImage = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemonId + '.png';
             // console.log('pokemon:id', pokemonId)
             return (
-              <TouchableOpacity style={styles.pokemonWrapper} key={index}>
+              <TouchableOpacity
+                onPress={() => handlePokemonDetails(item.url, pokemonId)}
+                style={styles.pokemonWrapper}
+                key={index}
+              >
                 <Image
                   style={styles.pokemonImg}
-                  source={{ uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemonId + '.png' }}
+                  source={{ uri: pokmeonImage }}
                 />
                 <Text style={styles.titleCase} ellipsizeMode='tail' numberOfLines={1}>{item.name}</Text>
               </TouchableOpacity>
@@ -118,7 +131,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderColor: 'red',
   },
-  titleCase : {
+  titleCase: {
     textTransform: 'capitalize'
   },
   pokemonImg: {

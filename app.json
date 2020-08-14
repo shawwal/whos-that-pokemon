@@ -23,6 +23,8 @@
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
+    "description": "Who's that pokémon game",
+    "githubUrl": "https://github.com/shawwal/whos-that-pokemon"
   }
 }
