@@ -28,6 +28,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
   return (
     <View style={styles.container}>
       <Image
+        defaultSource={require('./../assets/images/pokeball.png')}
         style={styles.pokemonImg}
         source={{ uri: officalArtWork }}
       />

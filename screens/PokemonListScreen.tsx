@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, memo } from 'react';
+import { StyleSheet, Alert, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { Text, View, FlatList } from '../components/Themed';
 import axios from 'axios';
 import { PokemonTabProps } from "./../types";
+
+var { width, height } = Dimensions.get('window');
 
 const API_URL = 'https://pokeapi.co/api/v2/pokemon/';
 
@@ -12,7 +14,7 @@ const Loading = () => (
   </View>
 );
 
-export default function PokemonListScreen({ navigation }: PokemonTabProps<"PokemonListScreen">) {
+function PokemonListScreen({ navigation }: PokemonTabProps<"PokemonListScreen">) {
   const [pokemonList, setPokemonList] = useState([]);
   const [nextApi, setNextApi] = useState('');
 
@@ -44,6 +46,7 @@ export default function PokemonListScreen({ navigation }: PokemonTabProps<"Pokem
   }
 
   function handleNextPokemon() {
+    // console.log('call')
     axios({
       url: nextApi,
       method: 'GET',
@@ -62,6 +65,28 @@ export default function PokemonListScreen({ navigation }: PokemonTabProps<"Pokem
     })
   }
 
+  // Test Memo
+  const PokeItems = memo((getItem: any) => {
+    const urlString = String(getItem.item.url);
+    const pokemonId = urlString.slice(-7).replace(/\D|\//g, "");
+    const pokmeonImage = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemonId + '.png';
+    return (
+      <TouchableOpacity
+        onPress={() => handlePokemonDetails(getItem.item.url, pokemonId)}
+        style={styles.pokemonWrapper}
+        key={getItem.item.name}
+      >
+        <Image
+          // defaultSource={require('./../assets/images/spin.gif')}
+          style={styles.pokemonImg}
+          source={{ uri: pokmeonImage }}
+        />
+        <Text style={styles.titleCase} ellipsizeMode='tail' numberOfLines={1}>{getItem.item.name}</Text>
+      </TouchableOpacity>
+    )
+  })
+  // Test Memo
+
   return (
     <View style={styles.container}>
       {pokemonList.length == 0 ? <Loading /> :
@@ -69,22 +94,25 @@ export default function PokemonListScreen({ navigation }: PokemonTabProps<"Pokem
           data={pokemonList}
           numColumns={3}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(_, index) => index.toString()}
           onEndReached={handleNextPokemon}
           onEndReachedThreshold={0.23}
+          // onEndReachedThreshold={0.7}
+          // maxToRenderPerBatch={10}
           removeClippedSubviews={true}
-          renderItem={({ item, index }) => {
+          renderItem={({ item }) => {
             const urlString = String(item.url);
             const pokemonId = urlString.slice(-7).replace(/\D|\//g, "");
             const pokmeonImage = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemonId + '.png';
-            // console.log('pokemon:id', pokemonId)
             return (
+              // <PokeItems item={item} />
               <TouchableOpacity
                 onPress={() => handlePokemonDetails(item.url, pokemonId)}
                 style={styles.pokemonWrapper}
-                key={index}
+                key={item.name}
               >
                 <Image
+                  // defaultSource={require('./../assets/images/spin.gif')}
                   style={styles.pokemonImg}
                   source={{ uri: pokmeonImage }}
                 />
@@ -127,7 +155,8 @@ const styles = StyleSheet.create({
   pokemonWrapper: {
     alignItems: 'center',
     margin: 7,
-    width: 110,
+    width: width * 0.27,
+     // width: 110,
     // borderWidth: 1,
     // borderColor: 'red',
   },
@@ -135,11 +164,16 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize'
   },
   pokemonImg: {
-    width: 100,
-    height: 100,
     resizeMode: 'contain',
+    width: width * 0.27,
+    height: height / 7.9,
+    // height: width / 3.7,
+    // width: 100,
+    // height: 100,
     // borderWidth: 1,
     // borderColor: 'blue',
     // tintColor: 'red'
   },
 });
+
+export default memo(PokemonListScreen)
