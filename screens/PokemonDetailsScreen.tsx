@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, Alert } from 'react-native';
+import { StyleSheet, Image, Alert, KeyboardStatic } from 'react-native';
 import { Text, View } from '../components/Themed';
 import axios from 'axios';
 import { PokemonTabProps } from "./../types";
+import TypeColors from '../constants/TypeColors';
 
 export default function PokemonDetailsScreen({ route }: PokemonTabProps<"PokemonDetailsScreen">) {
   const { endPoint, imgId } = route.params as any;
@@ -36,7 +37,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
       <View style={styles.typeRow}>
         {details.types?.map((obj: any, index: string | number | undefined) => {
           return (
-            <View key={index} style={styles.typeBorder}>
+            <View key={index} style={{...styles.typeBorder, backgroundColor: TypeColors[obj.type.name], borderColor: TypeColors[obj.type.name] }}>
               <Text style={styles.typeText}>{obj.type.name}</Text>
             </View>
           )
@@ -73,8 +74,8 @@ const styles = StyleSheet.create({
   },
   typeBorder: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#ccc',
+    // borderColor: '#ccc',
+    // backgroundColor: '#ccc',
     padding: 5,
     margin: 3,
     borderRadius: 10,

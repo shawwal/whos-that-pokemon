@@ -1,5 +1,5 @@
 import React, { useEffect, useState, memo } from 'react';
-import { StyleSheet, Alert, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Alert, Image, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { Text, View, FlatList } from '../components/Themed';
 import axios from 'axios';
 import { PokemonTabProps } from "./../types";
@@ -10,7 +10,8 @@ const API_URL = 'https://pokeapi.co/api/v2/pokemon/';
 
 const Loading = () => (
   <View style={styles.loadingContainer}>
-    <Text style={styles.paragraph}>Loading...</Text>
+    {/* <Text style={styles.paragraph}>Loading...</Text> */}
+    <ActivityIndicator />
   </View>
 );
 
