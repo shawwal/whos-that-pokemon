@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, Alert, KeyboardStatic } from 'react-native';
+import { StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
 import { Text, View } from '../components/Themed';
 import axios from 'axios';
 import { PokemonTabProps } from "./../types";
@@ -8,6 +8,7 @@ import TypeColors from '../constants/TypeColors';
 export default function PokemonDetailsScreen({ route }: PokemonTabProps<"PokemonDetailsScreen">) {
   const { endPoint, imgId } = route.params as any;
   const [details, setDetail] = useState([]) as any;
+  const [species, setSpecies] = useState([]) as any;
   const officalArtWork = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + imgId + ".png";
   const getPokemon = async () => {
     axios({
@@ -22,9 +23,30 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
     })
   }
 
+  const speciesEndpoint = 'https://pokeapi.co/api/v2/pokemon-species/' + imgId;
+
+  const getPokemonSpecies = async () => {
+    axios({
+      url: speciesEndpoint,
+      method: 'GET',
+    }).then((response) => {
+      if (response.status === 200) {
+        // console.log('check', JSON.stringify(response.data))
+        setSpecies(response.data.flavor_text_entries);
+        // console.log('check', species.flavor_text_entries[0])
+      }
+    }).catch((error) => {
+      Alert.alert('Something went wrong', error);
+    })
+  }
+
   useEffect(() => {
     getPokemon();
+    getPokemonSpecies();
   }, []);
+
+  let desc = species[0]?.flavor_text;
+  const newDesc = desc?.replace(/[\n\r\f]+/g, ' ');
 
   return (
     <View style={styles.container}>
@@ -37,12 +59,13 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
       <View style={styles.typeRow}>
         {details.types?.map((obj: any, index: string | number | undefined) => {
           return (
-            <View key={index} style={{...styles.typeBorder, backgroundColor: TypeColors[obj.type.name], borderColor: TypeColors[obj.type.name] }}>
+            <View key={index} style={{ ...styles.typeBorder, backgroundColor: TypeColors[obj.type.name], borderColor: TypeColors[obj.type.name] }}>
               <Text style={styles.typeText}>{obj.type.name}</Text>
             </View>
           )
         })}
       </View>
+      {newDesc == undefined ? <ActivityIndicator /> : <Text style={styles.descText}>{String(newDesc)}</Text>}
     </View>
   );
 }
@@ -52,7 +75,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
+    // borderWidth: 1,
+    // borderColor: 'blue',
+    // tintColor: 'red'
   },
+
   title: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -71,21 +98,21 @@ const styles = StyleSheet.create({
   },
   typeRow: {
     flexDirection: 'row',
+    marginBottom: 10
   },
   typeBorder: {
     borderWidth: 1,
-    // borderColor: '#ccc',
-    // backgroundColor: '#ccc',
     padding: 5,
     margin: 3,
     borderRadius: 10,
+  },
+  descText: {
+    paddingHorizontal: 10,
+    textAlign: 'center'
   },
   pokemonImg: {
     width: 250,
     height: 250,
     resizeMode: 'contain',
-    // borderWidth: 1,
-    // borderColor: 'blue',
-    // tintColor: 'red'
   },
 });
