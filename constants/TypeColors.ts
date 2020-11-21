@@ -13,7 +13,7 @@ const TypeColors: { [key: string]: string } = {
   ice: '#7ED4C9',
   normal: '#9A9DA1',
   poison: '#B563CE',
-  pyschic: '#F87C7A',
+  psychic: '#F87C7A',
   rock: '#CEC18C',
   steel: '#5596A4',
   water: '#559EDF'
