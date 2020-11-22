@@ -69,7 +69,8 @@ function PokemonListNavigator() {
       <PokemonListStack.Screen
         name="PokemonDetailsScreen"
         component={PokemonDetailsScreen}
-        options={{ headerTitle: 'Pokémon Details', headerBackTitleVisible: false, }}
+        options={{ headerShown: false}}
+        // options={{ headerTitle: 'Pokémon Details', headerBackTitleVisible: false, }}
       />
     </PokemonListStack.Navigator>
   );
