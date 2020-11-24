@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, Alert, ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, Image, Alert, ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { Text, View } from '../components/Themed';
 import axios from 'axios';
 import { PokemonTabProps } from "./../types";
 import TypeColors from '../constants/TypeColors';
 import PokemonTypes from '../components/PokemonTypes';
+import Constants from 'expo-constants';
 
 export default function PokemonDetailsScreen({ route }: PokemonTabProps<"PokemonDetailsScreen">) {
   const { endPoint, imgId } = route.params as any;
@@ -52,6 +53,9 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
   let desc = species[0]?.flavor_text;
   const newDesc = desc?.replace(/[\n\r\f]+/g, ' ');
   const TabArray = ['Stats', 'Evolution', 'Moves'];
+  const StatsArray = ['hp', 'atk', 'satk', 'def', 'sdef', 'spd'];
+
+  let animation = useRef(new Animated.Value(0));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,10 +81,12 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
             })}
           </View>
           {newDesc == undefined ? <ActivityIndicator /> : <Text style={styles.descText}>{String(newDesc)}</Text>}
-          <View style={styles.bmi}>
-            <Text>Height: {details.height / 10} m</Text>
-            <Text>Weight: {details.weight / 10} kg</Text>
-          </View>
+          {details.height ?
+            <View style={styles.bmi}>
+              <Text>Height: {details.height / 10} m</Text>
+              <Text>Weight: {details.weight / 10} kg</Text>
+            </View>
+            : null}
           {details.stats ?
             <View style={styles.tabContainer}>
               <View style={styles.tabRow}>
@@ -90,10 +96,10 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
                   return (
                     <TouchableOpacity
                       key={index}
-                      style={{ ...styles.tabs, backgroundColor: checkActiveTabs}}
+                      style={{ ...styles.tabs, backgroundColor: checkActiveTabs }}
                       onPress={() => setActiveTabs(index)}
                     >
-                      <Text style={{...styles.tabText, color: checkActiveText}}>{obj}</Text>
+                      <Text style={{ ...styles.tabText, color: checkActiveText }}>{obj}</Text>
                     </TouchableOpacity>
                   )
                 })}
@@ -101,9 +107,21 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
               {activeTabs == 0 ?
                 <View>
                   {details.stats?.map((obj: any, index: number) => {
+
+                    const range = obj.base_stat / 200 * 100;
+                    let width = animation.current.interpolate({
+                      inputRange: [0, 200],
+                      outputRange: [`${range}%`, "100%"],
+                      extrapolate: "clamp"
+                    })
+
                     return (
-                      <View key={index}>
-                        <Text style={styles.statText}>{obj.stat.name} {obj.base_stat}</Text>
+                      <View style={styles.statsRow} key={index}>
+                        <Text style={{ ...styles.statText, color: TypeColors[dominantType] }}>{StatsArray[index]}</Text>
+                        <Text style={styles.statNumber}>{obj.base_stat}</Text>
+                        <View style={{ ...styles.progressBar, borderColor: TypeColors[dominantType], }}>
+                          <Animated.View style={{ backgroundColor: TypeColors[dominantType], width }} />
+                        </View>
                       </View>
                     )
                   })}
@@ -113,7 +131,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
             : null}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
@@ -122,7 +140,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scroll: {
-    flex: 1,
     alignItems: 'center',
   },
   bmi: {
@@ -191,12 +208,11 @@ const styles = StyleSheet.create({
     height: 250,
     zIndex: 3,
     top: 10,
+    // top: Constants.statusBarHeight,
     position: 'absolute',
     resizeMode: 'contain',
   },
   tabContainer: {
-    // borderWidth: 1,
-    // borderColor: 'green',
     padding: 10
   },
   tabText: {
@@ -205,26 +221,55 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   tabRow: {
-    // borderWidth: 1,
-    // borderColor: 'red',
     display: 'flex',
     flexDirection: 'row',
     alignSelf: 'center',
-    marginBottom: 10,
+    marginVertical: 11,
+
   },
   tabs: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    // borderWidth: 1,
     padding: 5,
     margin: 3,
     borderRadius: 10,
     width: '33%',
     justifyContent: 'center',
   },
+  statsRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingVertical: 5,
+    marginHorizontal: 5,
+  },
   statText: {
-    textTransform: 'uppercase'
-  }
+    fontSize: 15,
+    width: 45,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+  },
+  statNumber: {
+    width: 35,
+    fontSize: 15,
+    display: 'flex',
+    textAlign: 'right',
+    paddingRight: 5
+  },
+  statWrapper: {
+    display: 'flex',
+    flex: 1,
+  },
+  progressBar: {
+    flexDirection: 'row',
+    height: 10,
+    width: '100%',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderRadius: 5,
+    display: 'flex',
+    flex: 1,
+    alignSelf: 'center',
+  },
 });
