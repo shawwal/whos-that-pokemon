@@ -6,18 +6,24 @@ import { PokemonTabProps } from "./../types";
 import TypeColors from '../constants/TypeColors';
 import PokemonTypes from '../components/PokemonTypes';
 import Constants from 'expo-constants';
+import * as Speech from 'expo-speech';
 
 export default function PokemonDetailsScreen({ route }: PokemonTabProps<"PokemonDetailsScreen">) {
   const { endPoint, imgId } = route.params as any;
+  const [imageId, setImageId] = useState(imgId);
+  const [pokeEndPoint, setEndpoint] = useState(endPoint);
   const [details, setDetail] = useState([]) as any;
   const [species, setSpecies] = useState([]) as any;
+  const [evolution, setEvolution] = useState([]) as any;
+  const [evolutionEndPoint, setEvolutionEndPoint] = useState([]) as any;
   const [dominantType, setDominantType] = useState('');
   const [activeTabs, setActiveTabs] = useState(0) as any;
-  const officalArtWork = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + imgId + ".png";
 
+  const officalArtWork = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + imageId + ".png";
+  
   const getPokemon = async () => {
     axios({
-      url: endPoint,
+      url: pokeEndPoint,
       method: 'GET',
     }).then((response) => {
       if (response.status === 200) {
@@ -29,7 +35,12 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
     })
   }
 
-  const speciesEndpoint = 'https://pokeapi.co/api/v2/pokemon-species/' + imgId;
+  const pushToEvolution = async (id: any) => {
+    setImageId(id);
+    setEndpoint('https://pokeapi.co/api/v2/pokemon/' + id);
+  }
+
+  const speciesEndpoint = 'https://pokeapi.co/api/v2/pokemon-species/' + imageId;
 
   const getPokemonSpecies = async () => {
     axios({
@@ -39,6 +50,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
       if (response.status === 200) {
         let englishFiltered = response.data.flavor_text_entries.filter((obj: any) => obj.language.name.includes('en'));
         setSpecies(englishFiltered);
+        setEvolutionEndPoint(response.data.evolution_chain.url);
       }
     }).catch((error) => {
       Alert.alert('Something went wrong', error);
@@ -48,7 +60,39 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
   useEffect(() => {
     getPokemon();
     getPokemonSpecies();
-  }, []);
+  }, [pokeEndPoint]);
+
+  const getEvolution = () => {
+    axios({
+      url: evolutionEndPoint,
+      method: 'GET',
+    }).then((response) => {
+      if (response.status === 200) {
+        let evoChain = [];
+        let evoData = response.data.chain;
+        do {
+          let evoDetails = evoData['evolution_details'][0];
+          evoChain.push({
+            "species_name": evoData.species.name,
+            "species_url": evoData.species.url,
+            "min_level": !evoDetails ? 1 : evoDetails.min_level,
+            "trigger_name": !evoDetails ? null : evoDetails.trigger.name,
+            "item": !evoDetails ? null : evoDetails.item
+          });
+
+          evoData = evoData['evolves_to'][0];
+        } while (!!evoData && evoData.hasOwnProperty('evolves_to'));
+        // setEvolution(response.data.chain.evolves_to[0].species);
+        setEvolution(evoChain);
+      }
+    }).catch((error) => {
+      Alert.alert('Something went wrong', error);
+    })
+  }
+
+  if (activeTabs == 1) {
+    evolution.length == 0 ? getEvolution() : null;
+  }
 
   let desc = species[0]?.flavor_text;
   const newDesc = desc?.replace(/[\n\r\f]+/g, ' ');
@@ -56,6 +100,10 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
   const StatsArray = ['hp', 'atk', 'satk', 'def', 'sdef', 'spd'];
 
   let animation = useRef(new Animated.Value(0));
+
+  const pokeSpeak = (sentance: string) => {
+    Speech.speak(sentance);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,7 +115,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
           source={{ uri: officalArtWork }}
         />
         <View style={styles.detailsBg}>
-          <Text style={styles.pokemonName} ellipsizeMode='tail' numberOfLines={1}>{details.name}</Text>
+          <TouchableOpacity onPress={ () => pokeSpeak(details.name)}><Text style={styles.pokemonName} ellipsizeMode='tail' numberOfLines={1}>{details.name}</Text></TouchableOpacity>
           <View style={styles.typeRow}>
             {details.types?.map((obj: any, index: string | number | undefined) => {
               const pokeType = PokemonTypes[obj.type.name];
@@ -80,7 +128,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
               )
             })}
           </View>
-          {newDesc == undefined ? <ActivityIndicator /> : <Text style={styles.descText}>{String(newDesc)}</Text>}
+          {newDesc == undefined ? <ActivityIndicator /> : <TouchableOpacity onPress={()=> pokeSpeak(String(newDesc))}><Text style={styles.descText}>{String(newDesc)}</Text></TouchableOpacity>}
           {details.height ?
             <View style={styles.bmi}>
               <Text>Height: {details.height / 10} m</Text>
@@ -107,14 +155,13 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
               {activeTabs == 0 ?
                 <View>
                   {details.stats?.map((obj: any, index: number) => {
-
-                    const range = obj.base_stat / 200 * 100;
+                    const maxRange = obj.base_stat > 200 ? obj.base_stat : 200;
+                    const range = obj.base_stat / maxRange * 100;
                     let width = animation.current.interpolate({
-                      inputRange: [0, 200],
+                      inputRange: [0, maxRange],
                       outputRange: [`${range}%`, "100%"],
                       extrapolate: "clamp"
                     })
-
                     return (
                       <View style={styles.statsRow} key={index}>
                         <Text style={{ ...styles.statText, color: TypeColors[dominantType] }}>{StatsArray[index]}</Text>
@@ -125,6 +172,33 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
                       </View>
                     )
                   })}
+                </View>
+                : null}
+              {activeTabs == 1 ?
+                <View style={styles.evolutionChain}>
+                  {evolution.map((obj: any, index: number) => {
+                    const urlString = String(obj.species_url);
+                    const pokemonId = urlString.slice(-7).replace(/\D|\//g, "");
+                    const pokmeonImage = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + pokemonId + '.png';
+                    return (
+                      <TouchableOpacity
+                        style={styles.evolutionRow}
+                        key={index}
+                        onPress={() => pushToEvolution(pokemonId)}
+                      >
+                        <Image
+                          style={styles.evolutionThumb}
+                          source={{ uri: pokmeonImage }} />
+                           <Text style={{textTransform: 'capitalize'}}>{obj.species_name}</Text>
+                      </TouchableOpacity>
+                    )
+                  })}
+
+                </View>
+                : null}
+              {activeTabs == 2 ?
+                <View>
+                  <Text>Move List</Text>
                 </View>
                 : null}
             </View>
@@ -208,9 +282,9 @@ const styles = StyleSheet.create({
     height: 250,
     zIndex: 3,
     top: 10,
-    // top: Constants.statusBarHeight,
     position: 'absolute',
     resizeMode: 'contain',
+    // top: Constants.statusBarHeight,
   },
   tabContainer: {
     padding: 10
@@ -225,7 +299,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     marginVertical: 11,
-
   },
   tabs: {
     display: 'flex',
@@ -265,11 +338,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 10,
     width: '100%',
-    backgroundColor: 'white',
     borderWidth: 1,
     borderRadius: 5,
     display: 'flex',
     flex: 1,
     alignSelf: 'center',
   },
+  evolutionChain : {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  evolutionRow : {
+    display: 'flex',
+    margin: 11,
+    alignItems: 'center',
+  },
+  evolutionThumb: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain'
+  }
 });

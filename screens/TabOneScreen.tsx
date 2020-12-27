@@ -24,7 +24,7 @@ export default function TabOneScreen() {
 
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
       <Text style={styles.title}>{isTablet ? 'Hi Tablet User' : 'Hi Phone User'}</Text>
       <Text>Device Test!</Text>
@@ -38,7 +38,7 @@ export default function TabOneScreen() {
       {isRetina && <Text>You are retina</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="/screens/TabOneScreen.tsx" />
-    </ScrollView>
+    </View>
   );
 }
 
