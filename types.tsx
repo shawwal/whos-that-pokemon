@@ -8,8 +8,8 @@ export type RootStackParamList = {
 
 export type BottomTabParamList = {
   PokéDex: undefined;
-  TabOne: undefined;
-  TabTwo: undefined;
+  PokéQuiz: undefined;
+  About: undefined;
 };
 
 export type PokemonParamList = {
@@ -18,11 +18,11 @@ export type PokemonParamList = {
 };
 
 export type TabOneParamList = {
-  TabOneScreen: undefined;
+  WhosThatPokemonScreen: undefined;
 };
 
 export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+  AboutScreen: undefined;
 };
 
 export type PokemonTabProps<T extends keyof PokemonParamList> = {

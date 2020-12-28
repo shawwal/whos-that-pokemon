@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Image, Alert, ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { StyleSheet, Image, Alert, ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity, Animated, Platform } from 'react-native';
 import { Text, View } from '../components/Themed';
 import axios from 'axios';
 import { PokemonTabProps } from "./../types";
@@ -14,8 +14,6 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
   const [pokeEndPoint, setEndpoint] = useState(endPoint);
   const [details, setDetail] = useState([]) as any;
   const [species, setSpecies] = useState([]) as any;
-  const [moves, setMoves] = useState([]) as any;
-  const [abilites, setAbilites] = useState([]) as any;
   const [evolution, setEvolution] = useState([]) as any;
   const [evolutionEndPoint, setEvolutionEndPoint] = useState([]) as any;
   const [dominantType, setDominantType] = useState('');
@@ -30,8 +28,6 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
     }).then((response) => {
       if (response.status === 200) {
         // console.log('data', response.data.moves);
-        setMoves(response.data.moves);
-        setAbilites(response.data.abilities);
         setDetail(response.data);
         setDominantType(response.data.types[0].type.name);
       }
@@ -84,7 +80,6 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
             "trigger_name": !evoDetails ? null : evoDetails.trigger.name,
             "item": !evoDetails ? null : evoDetails.item
           });
-
           evoData = evoData['evolves_to'][0];
         } while (!!evoData && evoData.hasOwnProperty('evolves_to'));
         setEvolution(evoChain);
@@ -100,7 +95,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
 
   let desc = species[0]?.flavor_text;
   const newDesc = desc?.replace(/[\n\r\f]+/g, ' ');
-  const TabArray = ['Stats', 'Evolution', 'More Details'];
+  const TabArray = ['Base Stats', 'Evolution', 'Moves'];
   const StatsArray = ['hp', 'atk', 'satk', 'def', 'sdef', 'spd'];
 
   let animation = useRef(new Animated.Value(0));
@@ -139,6 +134,27 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
               <Text>Weight: {details.weight / 10} kg</Text>
             </View>
             : null}
+          <Text style={{ textAlign: 'center', fontWeight: '500' }}>Abilities</Text>
+          <View style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            paddingTop: 7
+          }}>
+            {details.abilities?.map((obj: any, index: number) => {
+              return (
+                <View key={index} style={{
+                  borderWidth: 1,
+                  borderColor: TypeColors[dominantType],
+                  padding: 5,
+                  borderRadius: 5,
+                  margin: 3
+                }}>
+                  <Text style={{ textTransform: "capitalize", color: TypeColors[dominantType] }}>{obj.ability.name}</Text>
+                </View>
+              )
+            })}
+          </View>
           {details.stats ?
             <View style={styles.tabContainer}>
               <View style={styles.tabRow}>
@@ -202,62 +218,40 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
                 : null}
               {activeTabs == 2 ?
                 <View>
-                  <Text style={{textAlign: 'center'}}>Abilities</Text>
-                  <View style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center'
-                  }}>
-                    {details.abilities.map((obj: any, index: number) => {
-                      return (
-                        <View key={index} style={{
-                          borderWidth: 1,
-                          borderColor: TypeColors[dominantType],
-                          padding: 5,
-                          borderRadius: 5,
-                          margin: 3
-                        }}>
-                          <Text style={{ textTransform: "capitalize", color: TypeColors[dominantType] }}>{obj.ability.name}</Text>
+                  {details.moves.map((obj: any, index: number) => {
+                    const tempType = PokemonTypes[dominantType];
+                    return (
+                      <View key={index} style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        marginVertical: 7,
+                        paddingBottom: 7,
+                        alignItems: 'center',
+                        borderBottomColor: '#aeaeae',
+                        borderBottomWidth: 0.5
+                      }}>
+                        <View>
+                          <Text style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{obj.move.name}</Text>
+                          <Text>Level {obj.version_group_details[0].level_learned_at}</Text>
                         </View>
-                      )
-                    })}
-                  </View>
-                </View>
-                // <View>
-                //   {moves.map((obj: any, index: number) => {
-                //     const tempType = PokemonTypes[dominantType];
-                //     return (
-                //       <View key={index} style={{
-                //         display: 'flex',
-                //         flexDirection: 'row',
-                //         justifyContent: 'space-between',
-                //         marginVertical: 7,
-                //         paddingBottom: 7,
-                //         alignItems: 'center',
-                //         borderBottomColor: '#aeaeae',
-                //         borderBottomWidth: 1
-                //       }}>
-                //         <View>
-                //           <Text style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{obj.move.name}</Text>
-                //           <Text>Level {obj.version_group_details[0].level_learned_at}</Text>
-                //         </View>
 
-                //         <View
-                //           style={{
-                //             borderColor: TypeColors[dominantType],
-                //             padding: 5,
-                //             borderRadius: 20,
-                //             borderWidth: 1,
-                //             backgroundColor: TypeColors[dominantType],
-                //           }}
-                //         >
-                //           {/* @ts-ignore */}
-                //           <Image style={{ width: 17, height: 17, resizeMode: 'contain' }} source={tempType} />
-                //         </View>
-                //       </View>
-                //     )
-                //   })}
-                // </View>
+                        <View
+                          style={{
+                            borderColor: TypeColors[dominantType],
+                            padding: 5,
+                            borderRadius: 20,
+                            borderWidth: 1,
+                            backgroundColor: TypeColors[dominantType],
+                          }}
+                        >
+                          {/* @ts-ignore */}
+                          <Image style={{ width: 17, height: 17, resizeMode: 'contain' }} source={tempType} />
+                        </View>
+                      </View>
+                    )
+                  })}
+                </View>
                 : null}
             </View>
             : null}
@@ -270,6 +264,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS == 'android' ? Constants.statusBarHeight : 0,
   },
   scroll: {
     alignItems: 'center',
@@ -356,7 +351,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignSelf: 'center',
-    marginVertical: 11,
+    marginBottom: 5,
   },
   tabs: {
     display: 'flex',

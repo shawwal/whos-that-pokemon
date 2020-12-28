@@ -5,8 +5,8 @@ import * as React from 'react';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
+import WhosThatPokemonScreen from '../screens/WhosThatPokemonScreen';
+import AboutScreen from '../screens/AboutScreen';
 import PokemonListScreen from '../screens/PokemonListScreen';
 import PokemonDetailsScreen from '../screens/PokemonDetailsScreen';
 import { BottomTabParamList, TabOneParamList, TabTwoParamList, PokemonParamList } from '../types';
@@ -25,21 +25,21 @@ export default function BottomTabNavigator() {
         name="PokéDex"
         component={PokemonListNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-book" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-list" color={color} />,
         }}
       />
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
+        name="PokéQuiz"
+        component={WhosThatNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-star" color={color} />,
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
+        name="About"
+        component={AboutNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="ios-information-circle" color={color} />,
         }}
       />
     </BottomTab.Navigator>
@@ -64,7 +64,7 @@ function PokemonListNavigator() {
       <PokemonListStack.Screen
         name="PokemonListScreen"
         component={PokemonListScreen}
-        options={{ headerTitle: 'Pokémon List' }}
+        options={{ headerTitle: 'PokéDex' }}
       />
       <PokemonListStack.Screen
         name="PokemonDetailsScreen"
@@ -79,13 +79,13 @@ function PokemonListNavigator() {
 
 const TabOneStack = createStackNavigator<TabOneParamList>();
 
-function TabOneNavigator() {
+function WhosThatNavigator() {
   return (
     <TabOneStack.Navigator>
       <TabOneStack.Screen
-        name="TabOneScreen"
-        component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
+        name="WhosThatPokemonScreen"
+        component={WhosThatPokemonScreen}
+        options={{ headerShown: false }}
       />
     </TabOneStack.Navigator>
   );
@@ -93,13 +93,13 @@ function TabOneNavigator() {
 
 const TabTwoStack = createStackNavigator<TabTwoParamList>();
 
-function TabTwoNavigator() {
+function AboutNavigator() {
   return (
     <TabTwoStack.Navigator>
       <TabTwoStack.Screen
-        name="TabTwoScreen"
-        component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
+        name="AboutScreen"
+        component={AboutScreen}
+        options={{ headerTitle: 'About This App' }}
       />
     </TabTwoStack.Navigator>
   );

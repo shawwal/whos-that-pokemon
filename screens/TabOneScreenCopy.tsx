@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, Image } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
@@ -25,6 +25,7 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
+      <Image style={{width: 200, height: 300, resizeMode: 'contain'}} source={require('./../assets/images/whosthatpokemon.png')}/>
       <Text style={styles.title}>Tab One</Text>
       <Text style={styles.title}>{isTablet ? 'Hi Tablet User' : 'Hi Phone User'}</Text>
       <Text>Device Test!</Text>
