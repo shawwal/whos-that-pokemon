@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AntDesign } from '@expo/vector-icons';
-import { StyleSheet, Modal, Alert, TouchableHighlight, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, Modal, Alert, TouchableHighlight, TouchableOpacity, Linking, Image } from 'react-native';
 import { Text, View } from '../components/Themed';
 import useColorScheme from '../hooks/useColorScheme';
 
@@ -41,44 +41,32 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
       <View>
+        <View style={{display: 'flex', alignItems: 'center'}}>
+          <Image
+            style={{ width: 300, height: 100, resizeMode: 'contain' }}
+            source={require('./../assets/images/pokedex.png')}
+          />
+        </View>
         <Text style={styles.title}>Developer Note:</Text>
         <Text>
-          Hi I created this app to share on how to build app using Expo/React Native on my YouTube Channel.
+          Hi I created this app to share about how to build mobile apps using Expo/React Native on my YouTube Channel.
           Feel free to ask any questions regarding this app or contribute by sending pull request at Github repo of this project.
         </Text>
-        <Text style={styles.title}>Want to learn how to make this app?</Text>
-        <Text>Subscribe to 'Shawwal Muhammad' YouTube channel or Click link below to learn how to create this app!</Text>
+        <Text style={styles.title}>{"\n"}Want to learn how to make this app?</Text>
+        <Text>Subscribe to 'Shawwal Muhammad' YouTube channel or Click link below to learn how to create this app!{"\n"}</Text>
         <View style={{
           display: 'flex',
           flexDirection: 'row',
           padding: 5
         }}>
-          <TouchableOpacity style={{flex: 1}} onPress={() => Linking.openURL('https://www.youtube.com/channel/UCP_ueVbLEBk_FyZodKZQS4Q')}>
-            <View style={{
-              backgroundColor: '#FF0000',
-              paddingVertical: 5,
-              alignItems: 'center',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              borderRadius: 10,
-              margin: 3
-            }}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => Linking.openURL('https://www.youtube.com/channel/UCP_ueVbLEBk_FyZodKZQS4Q')}>
+            <View style={{ ...styles.socialMedia, backgroundColor: '#FF0000' }}>
               <AntDesign size={30} color="white" name="youtube" />
               <Text style={{ color: 'white', fontWeight: 'bold', paddingLeft: 10 }}>Watch Tutorial</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={{flex: 1}} onPress={() => Linking.openURL('https://www.youtube.com/channel/UCP_ueVbLEBk_FyZodKZQS4Q')}>
-            <View style={{
-              backgroundColor: themeColor,
-              paddingVertical: 5,
-              alignItems: 'center',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              borderRadius: 10,
-              margin: 3
-            }}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => Linking.openURL('https://github.com/shawwal')}>
+            <View style={{ ...styles.socialMedia, backgroundColor: themeColor }}>
               <AntDesign size={30} color={reverseThemeColor} name="github" />
               <Text style={{ color: reverseThemeColor, fontWeight: 'bold', paddingLeft: 10 }}>Github Repo</Text>
             </View>
@@ -104,7 +92,7 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: 15,
     justifyContent: 'space-between',
   },
   title: {
@@ -151,5 +139,14 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "left"
+  },
+  socialMedia: {
+    paddingVertical: 5,
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    borderRadius: 10,
+    margin: 3
   }
 });

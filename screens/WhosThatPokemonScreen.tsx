@@ -4,7 +4,6 @@ import useColorScheme from '../hooks/useColorScheme';
 
 export default function WhosThatPokemon() {
   const theme = useColorScheme();
-  console.log('check', theme)
   return (
     <SafeAreaView style={styles.container}>
       <Image
