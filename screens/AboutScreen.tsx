@@ -52,8 +52,8 @@ export default function TabTwoScreen() {
           Hi I created this app to share about how to build mobile apps using Expo/React Native on my YouTube Channel.
           Feel free to ask any questions regarding this app or contribute by sending pull request at Github repo of this project.
         </Text>
-        <Text style={styles.title}>{"\n"}Want to learn how to make this app?</Text>
-        <Text>Subscribe to 'Shawwal Muhammad' YouTube channel or Click link below to learn how to create this app!{"\n"}</Text>
+        <Text style={styles.title}>{"\n"}Do you want to learn how to make this app?</Text>
+        <Text>Go watch the tutorial at 'Shawwal Muhammad' YouTube channel and don't forget to subscribe for more content like this. Press link below to learn how to create this app now!{"\n"}</Text>
         <View style={{
           display: 'flex',
           flexDirection: 'row',

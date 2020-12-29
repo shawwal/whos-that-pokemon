@@ -7,6 +7,8 @@ import TypeColors from '../constants/TypeColors';
 import PokemonTypes from '../components/PokemonTypes';
 import Constants from 'expo-constants';
 import * as Speech from 'expo-speech';
+import pokemonMovesType from "../constants/PokemonMovesType";
+
 
 export default function PokemonDetailsScreen({ route }: PokemonTabProps<"PokemonDetailsScreen">) {
   const { endPoint, imgId } = route.params as any;
@@ -103,6 +105,14 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
   const pokeSpeak = (sentance: string) => {
     Speech.speak(sentance);
   };
+
+  const getMovesType = (type: string) => {
+    return pokemonMovesType.filter(
+      function(data: any) {
+        return data.type == type
+      }
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -219,7 +229,13 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
               {activeTabs == 2 ?
                 <View>
                   {details.moves.map((obj: any, index: number) => {
-                    const tempType = PokemonTypes[dominantType];
+   
+                    let checkType = pokemonMovesType.filter(function (entry: any) {
+                      return entry.name === obj.move.name;
+                    });
+
+                    let moveType = checkType != undefined ? checkType[0].type : dominantType;
+
                     return (
                       <View key={index} style={{
                         display: 'flex',
@@ -238,15 +254,15 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
 
                         <View
                           style={{
-                            borderColor: TypeColors[dominantType],
+                            borderColor: TypeColors[moveType],
                             padding: 5,
                             borderRadius: 20,
                             borderWidth: 1,
-                            backgroundColor: TypeColors[dominantType],
+                            backgroundColor: TypeColors[moveType],
                           }}
                         >
                           {/* @ts-ignore */}
-                          <Image style={{ width: 17, height: 17, resizeMode: 'contain' }} source={tempType} />
+                          <Image style={{ width: 17, height: 17, resizeMode: 'contain' }} source={PokemonTypes[moveType]} />
                         </View>
                       </View>
                     )
