@@ -20,7 +20,13 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "requireFullScreen": true
+      "requireFullScreen": true,
+      "bundleIdentifier": "com.shawwals.pokedex",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.shawwals.pokedex",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
