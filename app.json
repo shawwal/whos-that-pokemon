@@ -26,6 +26,7 @@
     },
     "android": {
       "package": "com.shawwals.pokedex",
+      "permissions" : [],
       "versionCode": 1
     },
     "web": {

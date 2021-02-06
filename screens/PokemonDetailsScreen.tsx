@@ -115,7 +115,7 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={{ ...styles.imageBg, backgroundColor: TypeColors[dominantType] }} />
         <Image
@@ -273,14 +273,14 @@ export default function PokemonDetailsScreen({ route }: PokemonTabProps<"Pokemon
             : null}
         </View>
       </ScrollView>
-    </SafeAreaView >
+    </View >
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS == 'android' ? Constants.statusBarHeight : 0,
+    // paddingTop: Platform.OS == 'android' ? Constants.statusBarHeight : 0,
   },
   scroll: {
     alignItems: 'center',
@@ -292,7 +292,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   imageBg: {
-    backgroundColor: 'red',
     width: '100%',
     height: 270,
     alignItems: 'center',
@@ -350,7 +349,7 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     zIndex: 3,
-    top: 10,
+    top: 30,
     position: 'absolute',
     resizeMode: 'contain',
     // top: Constants.statusBarHeight,
