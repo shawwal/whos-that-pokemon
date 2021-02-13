@@ -9,7 +9,10 @@ import WhosThatPokemonScreen from '../screens/WhosThatPokemonScreen';
 import AboutScreen from '../screens/AboutScreen';
 import PokemonListScreen from '../screens/PokemonListScreen';
 import PokemonDetailsScreen from '../screens/PokemonDetailsScreen';
+import CustomTabBar from './CustomTabBar';
 import { BottomTabParamList, TabOneParamList, TabTwoParamList, PokemonParamList } from '../types';
+import { BlurView } from 'expo-blur';
+import { StyleSheet } from 'react-native';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -19,7 +22,14 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="PokéDex"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
+      tabBarOptions={{
+        activeTintColor: Colors[colorScheme].tint,
+        style: {
+          backgroundColor: 'transparent',
+          elevation: 0,
+        },
+      }}
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
       <BottomTab.Screen
         name="PokéDex"
@@ -57,20 +67,28 @@ function TabBarIcon(props: { name: string; color: string }) {
 const PokemonListStack = createStackNavigator<PokemonParamList>();
 
 function PokemonListNavigator() {
+  const colorScheme = useColorScheme();
+  // const headerHeight = useHeaderHeight();
   return (
     <PokemonListStack.Navigator
-      // mode="modal"
+    // mode="modal"
     >
       <PokemonListStack.Screen
         name="PokemonListScreen"
         component={PokemonListScreen}
-        options={{ headerTitle: 'PokéDex' }}
+        options={{
+          headerTitle: 'PokéDex',
+          headerTransparent: false,
+          headerBackground: () => (
+            <BlurView tint={colorScheme} intensity={100} style={StyleSheet.absoluteFill} />
+          ),
+        }}
       />
       <PokemonListStack.Screen
         name="PokemonDetailsScreen"
         component={PokemonDetailsScreen}
-        options={{ headerShown: false}}
-        // options={{ headerTitle: 'Pokémon Details', headerBackTitleVisible: false, }}
+        options={{ headerShown: false }}
+      // options={{ headerTitle: 'Pokémon Details', headerBackTitleVisible: false, }}
       />
     </PokemonListStack.Navigator>
   );

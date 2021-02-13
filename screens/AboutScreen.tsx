@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AntDesign } from '@expo/vector-icons';
-import { StyleSheet, Modal, Alert, TouchableHighlight, TouchableOpacity, Linking, Image } from 'react-native';
+import { StyleSheet, Modal, Alert, TouchableHighlight, TouchableOpacity, Linking, Image, SafeAreaView } from 'react-native';
 import { Text, View } from '../components/Themed';
 import useColorScheme from '../hooks/useColorScheme';
 
@@ -39,7 +39,7 @@ export default function TabTwoScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View>
         <View style={{display: 'flex', alignItems: 'center'}}>
           <Image
@@ -85,7 +85,7 @@ export default function TabTwoScreen() {
           <Text style={styles.textStyle}>©2020 | Copyright Notice</Text>
         </TouchableHighlight>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -129,7 +129,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#280393",
     borderRadius: 10,
     padding: 10,
-    elevation: 2
+    elevation: 2,
+    marginBottom: 60,
   },
   textStyle: {
     color: "white",
