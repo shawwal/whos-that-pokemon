@@ -68,7 +68,6 @@ const PokemonListStack = createStackNavigator<PokemonParamList>();
 
 function PokemonListNavigator() {
   const colorScheme = useColorScheme();
-  // const headerHeight = useHeaderHeight();
   return (
     <PokemonListStack.Navigator
     // mode="modal"

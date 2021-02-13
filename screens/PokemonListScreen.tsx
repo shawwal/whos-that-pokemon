@@ -3,8 +3,6 @@ import { StyleSheet, Alert, Image, TouchableOpacity, Dimensions, ActivityIndicat
 import { Text, View, FlatList } from '../components/Themed';
 import axios from 'axios';
 import { PokemonTabProps } from "./../types";
-import { useHeaderHeight } from '@react-navigation/stack';
-
 
 var { width, height } = Dimensions.get('window');
 
@@ -20,8 +18,6 @@ const Loading = () => (
 function PokemonListScreen({ navigation }: PokemonTabProps<"PokemonListScreen">) {
   const [pokemonList, setPokemonList] = useState([]);
   const [nextApi, setNextApi] = useState('');
-  const headerHeight = useHeaderHeight();
-
   const getPokemon = async () => {
     const getPokemon = API_URL;
     axios({
